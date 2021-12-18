@@ -1080,7 +1080,7 @@ LABEL_5E8:
 	ld	(hl), l
 	ldir
 	ld	iy, Alis_stats
-	ld	(iy+weapon), ItemID_ShortSword
+	ld	(iy+weapon), ItemID_IronSword
 	ld	(iy+armor), ItemID_LeatherArmor
 	call	UnlockCharacter
 	ld	hl, $C600
@@ -2055,7 +2055,7 @@ GameMode_LoadRoad:
 	ld	($C27B), hl
 	ret
 
-LABEL_F0C:
+LABEL_F0C: ; [yh] called from road functions - gamemode and load
 .db $04, $0C, $00
 .db $38, $51, $05, $21, $2C, $01, $0B, $00
 .db $46, $46, $05, $27, $21, $01, $04, $01
@@ -2737,8 +2737,8 @@ LABEL_13CC:
 	ld	(iy+1), a
 	ld	a, $A1
 	ld	($C004), a
-	call	LABEL_3105
-	ld	hl, LABEL_B12_B1D8
+	call	LABEL_3105 ; [yh] investigate calling this, which reads from bank27
+	ld	hl, LABEL_B12_B1D8 ; [yh] enemy is healed
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
@@ -3109,8 +3109,8 @@ LABEL_1683:
 LABEL_1688:
 	ld	a, $D8
 	ld	($C004), a
-	ld	hl, LABEL_B12_B71B
-	call	ShowDialogue_B12
+	;ld	hl, LABEL_B12_B71B ;[yh don't tell me it's killed]
+	;call	ShowDialogue_B12
 	call	AwardEXP
 	call	UpdateCharStats
 	ld	hl, ($C2DD)
@@ -3118,8 +3118,8 @@ LABEL_1688:
 	or	l
 	or	h
 	ret	z
-	ld	hl, LABEL_B12_BCE1
-	call	ShowDialogue_B12
+	;ld	hl, LABEL_B12_BCE1 ; [yh] don't tell me it has a treasure chest
+	;call	ShowDialogue_B12
 	call	LABEL_16B2
 	call	WaitForButton1Or2
 	jp	LABEL_28DB
@@ -3304,7 +3304,7 @@ UpdateCharStats:
 
 
 ; =================================================================
-ItemEquipBoosts:
+ItemEquipBoosts: ;[yh] weapons among them, weapon attack boost
 .db	$00	; 0
 .db	$03	; 1
 .db	$04	; 2
@@ -3314,12 +3314,12 @@ ItemEquipBoosts:
 .db	$0A	; 6
 .db $15	; 7
 .db	$1F	; 8
-.db	$12	; 9
+.db	$32	; 9 ;[yh] trying to make the needle gun as powerful as the laser
 .db	$1E	; $A
 .db	$1E	; $B
 .db	$2E	; $C
 .db	$32	; $D
-.db	$3C	; $E
+.db	$63	; $E ;[yh] made lac sword incredibly powerful - 99 decimal
 .db	$50	; $F
 .db	$05	; $10
 .db	$05	; $11
@@ -3327,7 +3327,7 @@ ItemEquipBoosts:
 .db	$14	; $13
 .db	$1E	; $14
 .db	$1E	; $15
-.db	$3C	; $16
+.db	$50	; $16 ; [yh] diamond armor as strong as laconian armor
 .db $50	; $17
 .db	$28	; $18
 .db	$03	; $19
@@ -3368,7 +3368,7 @@ ItemEquipBoosts:
 .db	$00	; $3C
 .db	$00	; $3D
 .db	$00	; $3E
-.db	$00	; $3F
+.db	$50	; $3F ; [yh] assigning boost to zillion that's equal to lac axe
 ; =================================================================
 
 IsCharacterAlive_FromC267:
@@ -3390,7 +3390,7 @@ IsCharacterAlive:
 	bit  0, (hl)
 	ret
 
-LABEL_188E:
+LABEL_188E: ; [yh] check if alive
 	push	hl
 	call	IsCharacterAlive
 	pop	hl
@@ -3401,9 +3401,9 @@ LABEL_188E:
 	push	de
 	push	hl
 	ld	(CurrentCharacter), a
-	ld	hl, LABEL_B12_B730
+	ld	hl, LABEL_B12_B730 ;[yh] is already dead
 	call	ShowDialogue_B12
-	call	LABEL_3464
+	call	LABEL_3464 ; [yh] called a lot, leads to LABEL_3A57 and bank27
 	pop	hl
 	pop	de
 	pop	bc
@@ -3411,19 +3411,19 @@ LABEL_188E:
 	ret
 
 
-LABEL_18A9:
+LABEL_18A9: ; [yh] leads to spell graphics (fire, maybe others)
 	push	iy
 	ld	($C80A), a
 	ld	a, $0B
 	ld	($C800), a
-	call	LABEL_18B9
+	call	LABEL_18B9 ; [yh] spell graphics (fire, maybe others)
 	pop	iy
 	ret
 
 LABEL_18B9:
 	ld	a, $08
 	call	WaitForVInt
-	call	LABEL_576A
+	call	LABEL_576A ; [yh] spell graphics (fire, maybe others).
 	ld	a, ($C800)
 	or	a
 	jp	nz, LABEL_18B9
@@ -3514,13 +3514,13 @@ LABEL_1951
 	ld	($C267), a
 	ld	a, $FF
 	ld	($C2D4), a
-	ld	hl, LABEL_B12_B13D
+	ld	hl, LABEL_B12_B13D ; [yh] cannot understand each other
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
 LABEL_1964:
 	ld	hl, LABEL_B12_B132
-	call	ShowDialogue_B12
+	call	ShowDialogue_B12 ; [yh] enemy answers (talk)
 
 -
 	call	UpdateRNGSeed
@@ -3554,7 +3554,7 @@ LABEL_198A:
 .dw	LABEL_B12_BB45
 
 
-BattleMenu_Run:
+BattleMenu_Run: ; [yh] removed the chance of fail from Run.
 	call	LABEL_2ECD
 	call	LABEL_30B7
 	call	LABEL_30E1
@@ -3562,7 +3562,8 @@ BattleMenu_Run:
 	ld	b, a
 	call	UpdateRNGSeed
 	cp	b
-	jr	nc, LABEL_19C5
+	; [yh] by commenting out the line below, all Run attempts will succeed.
+	;jr	nc, LABEL_19C5 ; [yh] jr nc = jump if C is not set. not sure what C is but prob random set or reset by the RNG function.
 	ld	a, (Interaction_Type)
 	or	a
 	jr	nz, +
@@ -3571,14 +3572,14 @@ BattleMenu_Run:
 +
 	ld	a, $BC
 	ld	($C004), a
-	ld	a, $05
+	;ld	a, $05 ; [yh] this removes the step backwards when running in a dungeon
 	ld	($C267), a
 	ret
 
-LABEL_19C5:
+LABEL_19C5: ; [yh] called when run fails
 	ld	a, ($C267)
 	ld	(CurrentCharacter), a
-	ld	hl, LABEL_B12_B15E
+	ld	hl, LABEL_B12_B15E ; [yh] enemy blocks any retreat
 	call	ShowDialogue_B12
 	ld	a, $04
 	ld	($C267), a
@@ -3589,13 +3590,13 @@ LABEL_19C5:
 BattleMenu_Magic:
 	ld	a, ($C267)
 	ld	(CurrentCharacter), a
-	cp	$02
+	cp	$02 ; [yh]I think this is a 'if odin' statement
 	jp	nz, LABEL_19F2
-	ld	hl, LABEL_B12_B5BA
+	ld	hl, LABEL_B12_B5BA ; [yh] odin cannot use magic
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_19F2:
+LABEL_19F2: ; [yh] process any magic
 	ld	c, a
 	add	a, a
 	add	a, a
@@ -3639,10 +3640,10 @@ LABEL_19F2:
 	ld	a, (hl)
 	and	$1F
 	ld	b, a
-	call	LABEL_1B87
-	jr	c, LABEL_1A4B
+	call	LABEL_1B87 ; [yh] spend magic points?
+	jr	c, LABEL_1A4B ; [yh] leads to not enough magic points
 	ld	a, b
-	ld	hl, LABEL_1A66
+	ld	hl, LABEL_1A66 ; [yh] call 3rd magic list.. actually performs it?
 	call	GetPtrAndJump
 
 LABEL_1A3F:
@@ -3654,7 +3655,7 @@ LABEL_1A42:
 	jp	LABEL_3464
 
 LABEL_1A4B:
-	ld	hl, LABEL_B12_B6F7
+	ld	hl, LABEL_B12_B6F7 ; [yh] not enough magic points
 	call	ShowDialogue_B12
 	call	LABEL_3464
 	jp	LABEL_34C9
@@ -3664,7 +3665,7 @@ LABEL_1A4B:
 BattleMagicList:
 
 ; Alis
-.db	MagicID_Heal
+.db	MagicID_Thun
 .db	MagicID_Bye
 .db MagicID_Chat
 .db	MagicID_Fire
@@ -3675,7 +3676,7 @@ BattleMagicList:
 .db	MagicID_Terr
 .db	MagicID_Wall
 .db	MagicID_Help
-.db	MagicID_Nothing
+.db	MagicID_Thun ;[yh] why not
 
 ; Noah
 .db	MagicID_Fire
@@ -3686,8 +3687,8 @@ BattleMagicList:
 ; =================================================================
 
 
-LABEL_1A66:
-.dw	LABEL_1AAE
+LABEL_1A66: ; [yh] third magic list - 18 items
+.dw	LABEL_1AAE ; [yh] empty
 .dw	LABEL_1AB1
 .dw	LABEL_1AB1
 .dw	LABEL_1AFD
@@ -3702,36 +3703,36 @@ LABEL_1A66:
 .dw	LABEL_1AFD
 .dw	LABEL_1AFD
 .dw	LABEL_1AFD
-.dw	LABEL_1AFD
-.dw	LABEL_1B0D
-.dw	LABEL_1B31
+.dw	LABEL_1AFD ; [yh] item use?
+.dw	LABEL_1B0D ; [yh] talk spell
+.dw	LABEL_1B31 ; [yh] tele spell
 
-
+; [yh] second magic list - 18 items - same with no fly. battle list?
 LABEL_1A8A:
-.dw	LABEL_1E24
-.dw	LABEL_1E46
-.dw	LABEL_1E4A
-.dw	LABEL_1E8A
-.dw	LABEL_1E8E
-.dw	LABEL_1EA7
-.dw	LABEL_1EE6
-.dw	LABEL_1F25
-.dw	LABEL_1F36
-.dw	LABEL_1F80
-.dw	LABEL_1FC0
-.dw	LABEL_1FDF
-.dw	LABEL_201C
-.dw	LABEL_2064
-.dw	LABEL_2091
-.dw	LABEL_20BF
-.dw	LABEL_1B0D
-.dw	LABEL_1B31
+.dw	LABEL_1E24 ; [yh] empty
+.dw	LABEL_1E46 ; [yh] heal
+.dw	LABEL_1E4A ; [yh] cure
+.dw	LABEL_1E8A ; [yh] wall
+.dw	LABEL_1E8E ; [yh] prot
+.dw	LABEL_1EA7 ; [yh] fire
+.dw	LABEL_1EE6 ; [yh] thunder
+.dw	LABEL_1F25 ; [yh] wind
+.dw	LABEL_1F36 ; [yh] rope
+.dw	LABEL_1F80 ; [yh] bye
+.dw	LABEL_1FC0 ; [yh] help
+.dw	LABEL_1FDF ; [yh] terr
+.dw	LABEL_201C ; [yh] trap
+.dw	LABEL_2064 ; [yh] exit
+.dw	LABEL_2091 ; [yh] open
+.dw	LABEL_20BF ; [yh] rise
+.dw	LABEL_1B0D ; [yh] chat
+.dw	LABEL_1B31 ; [yh] tele
 
 
 LABEL_1AAE:
 	jp	LABEL_1AAE
 
-LABEL_1AB1:
+LABEL_1AB1: ; [yh] mysterious magic list 3 has this twice. heal/cure?
 	push	bc
 	call	LABEL_3682
 	pop	de
@@ -3750,7 +3751,7 @@ LABEL_1ACC:
 	call	LABEL_36CC
 	ret
 
-LABEL_1AD0:
+LABEL_1AD0: ; [yh] mysterious magic list 3 has this 4 times
 	ld	c, $03
 	xor	a
 	call	LABEL_1BB9
@@ -3759,7 +3760,7 @@ LABEL_1AD0:
 	ld	($C267), a
 	ret
 
-LABEL_1ADE:
+LABEL_1ADE: ; [yh] mysterious magic list 3 has this.
 	push	bc
 	call	LABEL_3682
 	pop	de
@@ -3778,7 +3779,7 @@ LABEL_1AF9:
 	call	LABEL_36CC
 	ret
 
-LABEL_1AFD:
+LABEL_1AFD: ; [yh] mysterious magic list 3 has this many times.
 	ld	c, $03
 	ld	a, (CurrentCharacter)
 	call	LABEL_1BB9
@@ -3787,27 +3788,27 @@ LABEL_1AFD:
 	ld	($C267), a
 	ret
 
-LABEL_1B0D:
+LABEL_1B0D: ; [yh] talk spells
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	a, $AB
 	ld	($C004), a
 
-LABEL_1B17:
+LABEL_1B17: ; [yh] talk spells (cont from above) + magic hat calls this
 	ld	a, ($C2E8)
 	and	$C0
-	jp	z, LABEL_1951
+	jp	z, LABEL_1951 ; [yh] cannot understand
 	and	$40
-	jp	z, LABEL_1964
+	jp	z, LABEL_1964 ; [yh] enemy answers
 	ld	a, ($C448)
 	ld	b, a
-	ld	a, (Alis_stats+attack)
+	ld	a, (Alis_stats+attack) ; [yh] wonder if this is a restore, given we used 'a' to load enemy / decide if we can talk to them
 	cp	b
-	jr	nc, LABEL_1B42
+	jr	nc, LABEL_1B42 ; [yh] talk to an enemy
 	jp	LABEL_1951
 
-LABEL_1B31:
+LABEL_1B31: ; [yh] tele
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -3815,14 +3816,14 @@ LABEL_1B31:
 LABEL_1B36:
 	ld	a, ($C2E8)
 	and	$C0
-	jp	z, LABEL_1951
+	jp	z, LABEL_1951 ; [yh] cannot understand each other
 	and	$40
-	jp	z, LABEL_1964
+	jp	z, LABEL_1964 ; [yh] enemy answers
 
-LABEL_1B42:
+LABEL_1B42: ; [yh] talk to an enemy
 	ld	a, $AC
 	ld	($C004), a
-	ld	hl, LABEL_B12_B132
+	ld	hl, LABEL_B12_B132 ; [yh] enemy answers
 	call	ShowDialogue_B12
 
 -
@@ -3833,7 +3834,7 @@ LABEL_1B42:
 	ld	l, a
 	ld	h, $00
 	add	hl, hl
-	ld	de, LABEL_1B73
+	ld	de, LABEL_1B73 ; [yh] list of enemy texts
 	add	hl, de
 	ld	a, (hl)
 	inc	hl
@@ -3847,11 +3848,11 @@ LABEL_1B42:
 	jp	LABEL_3464
 
 
-LABEL_1B73:
-.dw	LABEL_B12_BB5C
-.dw	LABEL_B12_BB8D
-.dw	LABEL_B12_BBBF
-.dw	LABEL_B12_BBD2
+LABEL_1B73: ; [yh] things an enemy might talk about
+.dw	LABEL_B12_BB5C ; [yh] the sound of the flute is both..
+.dw	LABEL_B12_BB8D ; [yh] the vehicle ice digger lives up to its name
+.dw	LABEL_B12_BBBF ; [yh] lassic lives above the sky
+.dw	LABEL_B12_BBD2 ; [yh] mad doctor in abion
 .dw	LABEL_B12_BBF0
 .dw	LABEL_B12_BC1A
 .dw	LABEL_B12_BC42
@@ -3860,7 +3861,7 @@ LABEL_1B73:
 .dw	LABEL_B12_BCAA
 
 
-LABEL_1B87:
+LABEL_1B87: ; [yh] called by every spell - spend mp  - then the actual spell routine is called. so for items that do a spell, they call the direct spell routine without the pre-section that involves a call to this.
 	ld	hl, MPCostData
 	add	a, l
 	ld	l, a
@@ -3880,7 +3881,7 @@ LABEL_1B87:
 	ret
 
 BattleMenu_Item:
-	call	LABEL_34D5
+	call	LABEL_34D5 ; [yh] select from inventory?
 	call	LABEL_3656
 	bit	4, c
 	ret	nz
@@ -3894,7 +3895,7 @@ BattleMenu_Item:
 	ld	($C267), a
 	ret
 
-LABEL_1BB9:
+LABEL_1BB9: ; [yh] item use?
 	push	af
 	ld	a, ($C267)
 	add	a, a
@@ -4178,9 +4179,9 @@ PlayerMenu_Magic:
 	and	$1F
 	ld	b, a
 	call	LABEL_1B87
-	jp	c, LABEL_1DD1
+	jp	c, LABEL_1DD1 ; [yh] not enough magic points
 	ld	a, b
-	ld	hl, LABEL_1DFE
+	ld	hl, LABEL_1DFE ; [yh] first magic list - map mode
 	call	GetPtrAndJump
 
 LABEL_1DB7:
@@ -4202,8 +4203,8 @@ LABEL_1DC8:
 	call	LABEL_3464
 	jp	LABEL_36BB
 
-LABEL_1DD1:
-	ld	hl, LABEL_B12_B6F7
+LABEL_1DD1: ; [yh] not enough magic points
+	ld	hl, LABEL_B12_B6F7 ; [yh] not enough magic points
 	call	ShowDialogue_B12
 	call	LABEL_3464
 	jr	LABEL_1DB7
@@ -4213,11 +4214,11 @@ LABEL_1DD1:
 MPCostData:
 .db	$00	; 0
 .db	$02	; 1
-.db	$06	; 2
+.db	$04	; 2 [yh] cure to cost 4 instead of 6
 .db	$06	; 3
 .db	$0A	; 4
 .db	$04	; 5
-.db	$10	; 6
+.db	$00	; 6 ; [yh] changed thunder to cost no mp
 .db	$0C	; 7
 .db	$04	; 8
 .db	$02	; 9
@@ -4239,7 +4240,7 @@ MapMagicList:
 ; Alis
 .db	MagicID_Heal
 .db	MagicID_Fly
-.db	MagicID_Nothing
+.db	MagicID_Cure ; [yh] why not
 .db	MagicID_Nothing
 .db	MagicID_Nothing
 
@@ -4258,66 +4259,66 @@ MapMagicList:
 .db	MagicID_Rise
 ; =================================================================
 
-
+; [yh] first magic list - map magic? (there are 3 lists)
 LABEL_1DFE:
-.dw	LABEL_1E24
-.dw	LABEL_1E27
-.dw	LABEL_1E2B
-.dw	LABEL_1E8A
-.dw	LABEL_1E8E
-.dw	LABEL_1EA7
-.dw	LABEL_1EE6
-.dw	LABEL_1F25
-.dw	LABEL_1F36
-.dw	LABEL_1F80
-.dw	LABEL_1FC0
-.dw	LABEL_1FDF
-.dw	LABEL_201C
-.dw	LABEL_2064
-.dw	LABEL_2091
-.dw	LABEL_20BF
-.dw	LABEL_20F8
-.dw	LABEL_20F8
-.dw	LABEL_2140
+.dw	LABEL_1E24 ; [yh] empty
+.dw	LABEL_1E27 ; [yh] heal
+.dw	LABEL_1E2B ; [yh] cure
+.dw	LABEL_1E8A ; [yh] wall
+.dw	LABEL_1E8E ; [yh] prot
+.dw	LABEL_1EA7 ; [yh] fire
+.dw	LABEL_1EE6 ; [yh] thunder
+.dw	LABEL_1F25 ; [yh] wind
+.dw	LABEL_1F36 ; [yh] rope
+.dw	LABEL_1F80 ; [yh] bye
+.dw	LABEL_1FC0 ; [yh] help
+.dw	LABEL_1FDF ; [yh] terr
+.dw	LABEL_201C ; [yh] trap
+.dw	LABEL_2064 ; [yh] exit
+.dw	LABEL_2091 ; [yh] open
+.dw	LABEL_20BF ; [yh] rise
+.dw	LABEL_20F8 ; [yh] chat
+.dw	LABEL_20F8 ; [yh] tele
+.dw	LABEL_2140 ; [yh] fly
 
 LABEL_1E24:
-	jp	LABEL_1E24
+	jp	LABEL_1E24 ; [yh] jumps onto itself??
 
 LABEL_1E27:
-	ld	d, $14
+	ld	d, $14 ; [yh] hexa for 20, this is heal
 	jr	LABEL_1E2D
 
 LABEL_1E2B:
-	ld	d, $50
+	ld	d, $78 ; [yh] 50 is hexa for 80, this is cure. changed to 120
 
 LABEL_1E2D:
 	push	bc
 	push	de
-	call	LABEL_3682
+	call	LABEL_3682 ; [yh] possibly select a target character
 	pop	de
 	bit	4, c
 	pop	bc
 	jr	nz, +
 	ld	(CurrentCharacter), a
-	call	LABEL_188E
+	call	LABEL_188E ; [yh] check if alive
 	jr	z, +
-	call	LABEL_1E53
+	call	LABEL_1E53 ; [yh] leads to heal
 +
-	jp	LABEL_36CC
+	jp	LABEL_36CC ; [yh] leads to bank27
 
 LABEL_1E46:
-	ld	d, $14
+	ld	d, $14 ; [yh] heal 20
 	jr	LABEL_1E4C
 
 LABEL_1E4A:
-	ld	d, $50
+	ld	d, $78 ; [yh] 50 is hexa for 80, this is cure. changed to 120
 
 LABEL_1E4C:
 	ld	a, (CurrentCharacter)
 	call	LABEL_188E
 	ret	z
 
-LABEL_1E53:
+LABEL_1E53: ; [yh] leads to a heal
 	push	de
 	ld	a, b
 	call	LABEL_1B87
@@ -4328,7 +4329,7 @@ LABEL_1E53:
 
 LABEL_1E5F:
 	push	de
-	ld	hl, LABEL_B12_B1D0
+	ld	hl, LABEL_B12_B1D0 ; [yh] is healed
 	call	ShowDialogue_B12
 	pop	de
 	ld	a, $C1
@@ -4350,14 +4351,14 @@ LABEL_1E5F:
 	ld	(ix+1), a
 	jp	LABEL_3464
 
-LABEL_1E8A:
+LABEL_1E8A: ; [yh] wall spell
 	ld	c, $06
 	jr	LABEL_1E90
 
-LABEL_1E8E:
+LABEL_1E8E: ; [yh] prot spell
 	ld	c, $86
 
-LABEL_1E90:
+LABEL_1E90: ; [yh] shared wall/prot routine
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4365,18 +4366,18 @@ LABEL_1E90:
 	ld	($C004), a
 	ld	a, c
 	ld	($C2EF), a
-	ld	hl, LABEL_B12_B18B
+	ld	hl, LABEL_B12_B18B ; [yh] an invisible wall
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_1EA7:
+LABEL_1EA7: ; [yh] fire spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	de, $F610
 	call	LABEL_1EB2
 
-LABEL_1EB2:
+LABEL_1EB2: ; [yh] called by wind and fire
 	ld	b, $08
 
 -
@@ -4390,7 +4391,7 @@ LABEL_1EB2:
 +
 	push	de
 	ld	a, e
-	call	LABEL_18A9
+	call	LABEL_18A9 ; [yh] this is the fire graphics.
 
 LABEL_1EC6:
 	call	UpdateRNGSeed
@@ -4403,23 +4404,23 @@ LABEL_1EC6:
 	pop	de
 	push	de
 	call	UpdateRNGSeed
-	and	$03
+	and	$0F ; [yh] fire/wind damage. $03 to $0F and it one-shots everyting
 	add	a, d
-	call	LABEL_125E
-	call	LABEL_3105
+	call	LABEL_125E ; [yh] makes the enemy flash with spell effect?
+	call	LABEL_3105 ; [yh] makes the enemy flash with spell effect?
 	pop	de
 	ret
 
-LABEL_1EE6:
+LABEL_1EE6: ; [yh] thunder
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	de, $D811
 
-LABEL_1EEE:
+LABEL_1EEE: ; [yh] continues thunder
 	ld	b, $08
 
-LABEL_1EF0:
+LABEL_1EF0: ; [yh] continues thunder
 	push	bc
 	ld	a, b
 	sub	$0C
@@ -4430,7 +4431,7 @@ LABEL_1EF0:
 	pop	ix
 	push	de
 	ld	a, e
-	call	LABEL_18A9
+	call	LABEL_18A9 ; [yh] shared with fire spell graphics?
 	pop	de
 	push	de
 	ld	a, d
@@ -4456,16 +4457,19 @@ LABEL_1F23:
 	pop	bc
 	ret
 
-LABEL_1F25:
+LABEL_1F25: ; [yh] wind spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	de, $F412
 	call	LABEL_1EB2
 	call	LABEL_1EB2
+	call	LABEL_1EB2 ; [yh] added 3 of these to cause 6 winds instead of 3
+	call	LABEL_1EB2
+	call	LABEL_1EB2
 	jp	LABEL_1EB2
 
-LABEL_1F36:
+LABEL_1F36: ;[yh] rope spell, see below
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4497,7 +4501,7 @@ LABEL_1F36:
 	add	hl, de
 	ld	a, (hl)
 	or	a
-	jr	z, LABEL_1F76
+	jr	z, LABEL_1F76 ;[yh] leads to tied up label
 +
 	djnz	-
 
@@ -4507,20 +4511,20 @@ LABEL_1F71:
 
 LABEL_1F76:
 	ld	(hl), c
-	ld	hl, LABEL_B12_B1E0
+	ld	hl, LABEL_B12_B1E0 ;[yh] is tied up - rope spell?
 
 LABEL_1F7A:
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_1F80:
+LABEL_1F80: ; [yh] bye spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	xor	a
 	ld	(CurrentItem), a
 
-LABEL_1F89:
+LABEL_1F89: ;[yh] bye spell, called directly by wand, and cont from above.
 	ld	a, ($C2E7)
 	or	a
 	jr	z, +
@@ -4532,9 +4536,9 @@ LABEL_1F89:
 +
 	ld	a, (CurrentItem)
 	or	a
-	ld	hl, LABEL_B12_B172
+	ld	hl, LABEL_B12_B172 ;[yh] magic is not effective
 	jr	z, +
-	ld	hl, LABEL_B12_B2CD
+	ld	hl, LABEL_B12_B2CD ;[yh] but it has no effect
 +
 	call	ShowDialogue_B12
 	jp	LABEL_3464
@@ -4542,29 +4546,29 @@ LABEL_1F89:
 LABEL_1FAC:
 	ld	a, $BC
 	ld	($C004), a
-	ld	hl, LABEL_B12_B25F
+	ld	hl, LABEL_B12_B25F ;[yh] escape quickly
 	call	ShowDialogue_B12
 	call	LABEL_3464
 	ld	a, $05
 	ld	($C267), a
 	ret
 
-LABEL_1FC0:
+LABEL_1FC0: ;[yh] help spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	a, $AB
 	ld	($C004), a
 	ld	a, (CurrentCharacter)
-	call	LABEL_188E
+	call	LABEL_188E ;[yh] check if alive
 	ret	z
 	call	IsCharacterAlive
 	set	7, (hl)
-	ld	hl, LABEL_B12_B22F
+	ld	hl, LABEL_B12_B22F ; [yh] bursting with strength - help cast?
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_1FDF:
+LABEL_1FDF: ;[yh] terr spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4577,7 +4581,7 @@ LABEL_1FDF:
 	jr	c, LABEL_200C
 	call	UpdateRNGSeed
 	cp	$B2
-	jr	nc, LABEL_200C
+	jr	nc, LABEL_200C ;[yh] leads to not effective
 	ld	b, $08
 
 -
@@ -4587,7 +4591,7 @@ LABEL_1FDF:
 	call	IsCharacterAlive
 	jr	z, +
 	bit	6, (hl)
-	jr	z, LABEL_2011
+	jr	z, LABEL_2011 ;[yh] leads to enemy recoils in fear
 +
 	djnz	-
 
@@ -4597,13 +4601,13 @@ LABEL_200C:
 
 LABEL_2011:
 	set	6, (hl)
-	ld	hl, LABEL_B12_B24C
+	ld	hl, LABEL_B12_B24C ;[yh] enemy recoils in fear
 
 LABEL_2016:
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_201C:
+LABEL_201C: ; [yh] trap spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4614,7 +4618,7 @@ LABEL_201C:
 	jr	z, ++
 	ld	a, (Interaction_Type)
 	or	a
-	ld	hl, LABEL_B12_B569
+	ld	hl, LABEL_B12_B569 ;[yh] nothing special about it
 	jr	nz, +
 	call	LABEL_684A
 	ld	hl, LABEL_B12_B569
@@ -4622,7 +4626,7 @@ LABEL_201C:
 	ld	l, c
 	ld	h, $CB
 	ld	(hl), $00
-	ld	hl, LABEL_B12_B28E
+	ld	hl, LABEL_B12_B28E ;[yh] spotted and disarmed the trap
 +:
 	call	ShowDialogue_B12
 	jp	LABEL_3464
@@ -4630,30 +4634,30 @@ LABEL_201C:
 ++:
 	ld	a, ($C80F)
 	cp	$3D
-	ld	hl, LABEL_B12_B27F
+	ld	hl, LABEL_B12_B27F ;[yh] there was no trap
 	jr	z, +
-	ld	hl, LABEL_B12_B28E
+	ld	hl, LABEL_B12_B28E ;[yh] spotted and disarmed the trap
 +:
 	call	ShowDialogue_B12
 	ld	a, $3D
 	ld	($C80F), a
-	jp	LABEL_28EE
+	jp	LABEL_28EE ;[yh] open chest
 
-LABEL_2064:
+LABEL_2064: ; [yh] exit
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
 	ld	a, (Interaction_Type)
 	or	a
 	jr	z, LABEL_2078
-	ld	hl, LABEL_B12_B172
+	ld	hl, LABEL_B12_B172 ; [yh] is not effective
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
 LABEL_2078:
 	ld	a, $BF
 	ld	($C004), a
-	ld	hl, LABEL_B12_B59C
+	ld	hl, LABEL_B12_B59C ;[yh] feel very light
 	call	ShowDialogue_B12
 	call	LABEL_3464
 	ld	a, $FF
@@ -4662,7 +4666,7 @@ LABEL_2078:
 	ld	(hl), $08 ; GameMode_LoadMap
 	ret
 
-LABEL_2091:
+LABEL_2091: ; [yh] open spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4672,7 +4676,7 @@ LABEL_2091:
 	or	a
 	jr	z, +
 -:
-	ld	hl, LABEL_B12_B172
+	ld	hl, LABEL_B12_B172 ;[yh] not effective
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
@@ -4688,7 +4692,7 @@ LABEL_2091:
 	ld	($C2D8), a
 	ret
 
-LABEL_20BF:
+LABEL_20BF: ; [yh] rise spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4702,7 +4706,7 @@ LABEL_20BF:
 	ld	(CurrentCharacter), a
 	call	IsCharacterAlive
 	jr	z, +
-	ld	hl, LABEL_B12_B709
+	ld	hl, LABEL_B12_B709 ; [yh] is still alive
 	jr	++
 
 +:
@@ -4715,14 +4719,14 @@ LABEL_20BF:
 	inc	de
 	ldi
 	ldi
-	ld	hl, LABEL_B12_B5B0
+	ld	hl, LABEL_B12_B5B0 ; [yh] is resurrected
 ++:
 	call	ShowDialogue_B12
 	call	LABEL_3464
 +++:
 	jp	LABEL_36CC
 
-LABEL_20F8:
+LABEL_20F8: ; [yh] chat or tele
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4734,17 +4738,17 @@ LABEL_2102:
 	jr	z, ++
 	ld	a, (Interaction_Type)
 	or	a
-	ld	hl, LABEL_B12_B424
+	ld	hl, LABEL_B12_B424 ;[yh] feels nothing
 	jr	nz, +
-	call	LABEL_684A
-	ld	hl, LABEL_B12_B424
+	call	LABEL_684A ;[yh] dungeon object data
+	ld	hl, LABEL_B12_B424 ;[yh] feels nothing - tele spell in front of non-trap
 	jr	z, +
-	ld	hl, LABEL_B12_B404
+	ld	hl, LABEL_B12_B404 ;[yh] has terrible premonition - tele spell in front of trap
 +:
 	call	ShowDialogue_B12
 	ld	a, $D5
 	ld	($C004), a
-	jp	LABEL_3464
+	jp	LABEL_3464 ;[yh] path to bank27
 
 ++:
 	ld	a, ($C80F)
@@ -4758,7 +4762,7 @@ LABEL_2102:
 	ld	($C004), a
 	jp	LABEL_28DB
 
-LABEL_2140:
+LABEL_2140: ; [yh] fly spell
 	ld	a, b
 	call	LABEL_1B87
 	ld	(de), a
@@ -4767,12 +4771,12 @@ LABEL_2140:
 	ld	a, (Interaction_Type)
 	or	a
 	jr	nz, LABEL_2159
-	ld	hl, LABEL_B12_B172
+	ld	hl, LABEL_B12_B172 ; [yh] magic is not effective
 	call	ShowDialogue_B12
 	jp	LABEL_3464
 
-LABEL_2159:
-	ld	hl, LABEL_B12_B59C
+LABEL_2159: ;[yh] fly - called from wand and cont from above
+	ld	hl, LABEL_B12_B59C ;[yh] feels very light
 	call	ShowDialogue_B12
 	call	LABEL_3464
 	ld	a, $08
@@ -4952,7 +4956,7 @@ ItemUse_Wand:
 	call ShowDialogue_B12
 	ld a, ($C29D)
 	or a
-	jp nz, LABEL_1F89
+	jp nz, LABEL_1F89 ;[yh] bye spell
 	ld hl, LABEL_B12_B312
 	call ShowDialogue_B12
 	jp LABEL_3464
@@ -5028,7 +5032,7 @@ ItemUse_Cola:
 	jr +
 
 ItemUse_Burger:
-	ld d, 40	; heal 40
+	ld d, 80	; heal 40 ;[yh] changed to 80
 +:
 	ld a, ($C29D)
 	or a
@@ -5078,6 +5082,7 @@ ItemUse_Flute:
 	ld a, $D5
 	ld ($C004), a
 	jp LABEL_3464
+
 
 
 ItemUse_Flash:
@@ -5136,7 +5141,7 @@ ItemUse_Transfer:
 	push af
 	call nz, Inventory_RemoveItem
 	pop af
-	jp nz, LABEL_2159
+	jp nz, LABEL_2159 ; [yh] fly routine called from spell too
 	ld hl, LABEL_B12_B312
 	call ShowDialogue_B12
 	jp LABEL_3464
@@ -5147,7 +5152,7 @@ ItemUse_MagicHat:
 	call ShowDialogue_B12
 	ld a, ($C29D)
 	or a
-	jp nz, LABEL_1B17
+	jp nz, LABEL_1B17 ; [yh] same as talk spell
 	ld hl, LABEL_B12_B2CD
 	call ShowDialogue_B12
 	jp LABEL_3464
@@ -5280,7 +5285,7 @@ ItemUse_Sphere:
 	call ShowDialogue_B12
 	ld a, ($C29D)
 	or a
-	jp nz, LABEL_1B36
+	jp nz, LABEL_1B36 ; [yh] talk spell
 	jp LABEL_2102
 
 ItemUse_EclipseTorch:
@@ -5740,7 +5745,7 @@ PlayerMenu_Search:
 	cp $07
 	jr nz, +
 	ld a, l
-	cp $28
+	cp $
 	jr nz, LABEL_28C5
 	ld a, h
 	cp $1E
@@ -5802,7 +5807,7 @@ LABEL_28DB:
 	or 	a
 	ret	nz
 
-LABEL_28EE:
+LABEL_28EE: ; [yh] open chest routine
 	ld a, $B0
 	ld ($C004), a
 	ld hl, ($C2E1)
@@ -5822,7 +5827,7 @@ LABEL_28EE:
 	ld a, ($C2DF)
 	or a
 	jr nz, +
-	ld hl, LABEL_B12_B665
+	ld hl, LABEL_B12_B665 ;[yh] it's empty
 	call ShowDialogue_B12
 	ld a, $D0
 	ld ($C900), a
@@ -5834,13 +5839,13 @@ LABEL_28EE:
 	call LABEL_297A
 	ld a, h
 	or l
-	ld hl, LABEL_B12_B648
+	ld hl, LABEL_B12_B648 ;[yh] mesetas
 	call nz, ShowDialogue_B12
 	ld a, ($C2DF)
 	ld (CurrentItem), a
 	or a
 	jr z, +
-	ld hl, LABEL_B12_B592
+	ld hl, LABEL_B12_B592 ; [yh] you found item
 	call ShowDialogue_B12
 	call Inventory_AddItem
 +:
@@ -6886,7 +6891,7 @@ LABEL_30ED:
 	ld	bc, $0A10
 	call	LABEL_3AA6
 
-LABEL_3105:
+LABEL_3105: ; [yh] multiple reads from bank27
 	ld	hl, LABEL_B27_BACF
 	ld	de, $781C
 	ld	bc, $0114
@@ -6989,7 +6994,7 @@ LABEL_319E:
 
 CharacterNames:
 .db "ALIS"
-.db	"MYAU"
+.db	"MINU"
 .db	"ODIN"
 .db	"NOAH"
 
@@ -7779,7 +7784,7 @@ LABEL_3665:
 	jp	CheckOptionSelect
 
 
-LABEL_3682:
+LABEL_3682: ; [yh] possibly lets you select a target character to cast on
 	ld a, (Party_curr_num)
 	or a
 	ret z
@@ -8261,7 +8266,7 @@ LABEL_3A21:
 	pop af
 	ret
 
-LABEL_3A57:
+LABEL_3A57: ; [yh] loads from bank27
 	ld	a, ($FFFF)
 	push	af
 	ld	a, :Bank27
@@ -10371,7 +10376,7 @@ LABEL_4B9D:
 	ld a, $2D
 	call Inventory_FindFreeSlot
 	jr z, +
-	ld hl, $C604
+	ld hl, $C604; [yh] I think this sets the flag for the dungeon key to be avail
 	ld (hl), $00
 +:
 	ld hl, $0058
@@ -11924,7 +11929,7 @@ ShowDialogue_B2:
 	ld l, a
 	jp LABEL_31D4
 
-LABEL_576A:
+LABEL_576A: ; [yh] spell graphics related (fire?). ret here and no alis on map or battle
 	ld	hl, $C289
 	ld	($C287), hl
 	ld	de, $C28B
@@ -11934,7 +11939,7 @@ LABEL_576A:
 	ld	(hl), $FF
 	dec  hl
 	ldir
-	ld	hl, $C900
+	ld	hl, $C900 ; [yh] commenting out this and next = no alis/enemy
 	ld	($C217), hl
 	ld	hl, $C980
 	ld	($C219), hl
@@ -14159,7 +14164,7 @@ LABEL_6830:
 	ret
 
 
-LABEL_684A:
+LABEL_684A: ;[yh] looks at a dungeon object data
 	ld b, $01
 	call LABEL_6BE9
 	cp $08
@@ -17415,8 +17420,8 @@ ItemData:
 .db	$40	; $B
 .db	$50	; $C
 .db $40	; $D
-.db	$50	; $E
-.db	$40	; $F
+.db	$F0	; $E ;[yh] changed lac sword to be equippable by all
+.db	$F0	; $F ;[yh] changed lac axe to be equippable by all
 .db	$51	; $10
 .db	$81	; $11
 .db	$51	; $12
@@ -17464,7 +17469,7 @@ ItemData:
 .db	$00	; $3C
 .db $00	; $3D
 .db	$04	; $3E
-.db	$00	; $3F
+.db	$F0	; $3F ;[yh] changed the zillion item to be equippable by all
 ; =================================================================
 
 
@@ -17541,7 +17546,7 @@ DialogueBlock:
 .dw Dialogue_Index_02A2, Dialogue_Index_02A4, Dialogue_Index_02A6, Dialogue_Index_02A8, Dialogue_Index_02AA
 
 Dialogue_Index_0002:
-.db "I", Dialogue_Apostrophe, "M SUELO. I ", Word_Know, Dialogue_NewLine
+.db "I", Dialogue_Apostrophe, "M HAVA. I ", Word_Know, Dialogue_NewLine
 .db "HOW ", Word_You_Must, " FEEL,", Dialogue_NewPage
 .db "DEAR,NO ", Word_One, " CAN", Dialogue_NewLine
 .db "STOP ", Word_You, Word_From, Dialogue_NewPage
@@ -17557,11 +17562,11 @@ Dialogue_Index_0004:
 Dialogue_Index_0006:
 .db Word_Please, Word_Rest, Dialogue_NewLine
 .db Word_Yourself, ".", Dialogue_NewPage
-.db Word_You, Word_Are, Word_Welcome, Dialogue_NewLine
+.db Word_You, Word_Are, "HAVA", Dialogue_NewLine
 .db Word_Here, " AT ", Word_Any, Word_Time, ".", Dialogue_Terminator65
 
 Dialogue_Index_0008:
-.db "I", Dialogue_Apostrophe, "M NEKISE. ", Word_One, Dialogue_NewLine
+.db "I", Dialogue_Apostrophe, "M NNEKA. ", Word_One, Dialogue_NewLine
 .db "HEARS LOTS OF", Dialogue_NewPage
 
 Dialogue_Index_000A:
@@ -17583,8 +17588,8 @@ Dialogue_Index_000E:
 Dialogue_Index_0010:
 .db "I ", Word_Wish, " I COULD", Dialogue_NewLine
 .db Word_Help, " ", Word_You, "MORE.", Dialogue_NewPage
-.db "I PRAY FOR ", Word_Your, Dialogue_NewLine
-.db "SAFETY.", Dialogue_Terminator65
+.db "I ROOT FOR NY", Dialogue_NewLine
+.db "LIBERTY.", Dialogue_Terminator65
 
 Dialogue_Index_0012:
 .db Word_The, "CAMINEET", Dialogue_NewLine
@@ -17786,16 +17791,13 @@ Dialogue_Index_0060:
 .db "O.K. GOOD DAY.", Dialogue_Terminator65
 
 Dialogue_Index_0062:
-.db Word_Do_You_Know, " ABOUT", Dialogue_NewLine
-.db Word_The, Word_Planets, " OF", Dialogue_NewPage
-.db Word_The, Word_Algol, " STAR", Dialogue_NewLine
+.db Word_Do_You_Know, " WHO", Dialogue_NewLine
+.db "CREATED THE", Dialogue_NewPage
+.db Word_Algol, " STAR", Dialogue_NewLine
 .db Word_System, "?", Dialogue_Terminator62
 
 Dialogue_Index_0064:
-.db Word_There_Are, " THREE", Dialogue_NewLine
-.db Word_Planets, "; ", Word_Palma, Dialogue_NewPage
-.db Word_Motavia, " AND", Dialogue_NewLine
-.db Word_Dezoris, ".", Dialogue_NewPage
+.db "YOUR MOM.", Dialogue_Terminator65
 
 Dialogue_Index_0066:
 .db Word_Palma, " IS A ", Word_World, Dialogue_NewLine
@@ -19457,7 +19459,7 @@ Dialogue_Word_Index_00:
 .db "ALIS", Dialogue_Terminator65
 
 Dialogue_Word_Index_01:
-.db "MYAU", Dialogue_Terminator65
+.db "MINU", Dialogue_Terminator65
 
 Dialogue_Word_Index_02:
 .db "ATTACK", Dialogue_Terminator65

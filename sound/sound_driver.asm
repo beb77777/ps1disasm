@@ -3151,8 +3151,7 @@ LABEL_B12_B5F0:
 .db Word_You, "NEED ", Word_Not, "EQUIP", Word_That, " ITEM.", Dialogue_Terminator65
 
 LABEL_B12_B604:
-.db Word_You, "GAINED ", Dialogue_NumberFromC2C5, Dialogue_NewLine
-.db "EXPERIENCE POINTS.", Dialogue_Terminator65
+.db Word_You, "GAINED ", Dialogue_NumberFromC2C5, " XP", Dialogue_Terminator65
 
 LABEL_B12_B621:
 .db Dialogue_CurrentCharacter, " ADVANCED", Dialogue_NewLine
@@ -3163,11 +3162,10 @@ LABEL_B12_B635:
 .db "A SPELL.", Dialogue_Terminator65
 
 LABEL_B12_B648:
-.db Word_There_Are, " ", Dialogue_NumberFromC2C5, Dialogue_NewLine
-.db Word_Mesetas, " INSIDE.", Dialogue_Terminator65
+.db Dialogue_NumberFromC2C5, " ", Word_Mesetas, Dialogue_Terminator65
 
 LABEL_B12_B656:
-.db Word_Do_You, " ", Word_Want, "TO", Dialogue_NewLine
+;.db Word_Do_You, " ", Word_Want, "TO", Dialogue_NewLine ; [yh] no need to be polite
 .db "OPEN IT?", Dialogue_Terminator62
 
 LABEL_B12_B665:
@@ -3175,8 +3173,9 @@ LABEL_B12_B665:
 
 LABEL_B12_B671:
 .db Word_You, Word_Cannot, " ", Word_Carry, Dialogue_NewLine
-.db Word_Any, "MORE.", Dialogue_NewPage
-.db Word_Do_You, " ", Word_Want, "TO", Dialogue_NewLine
+; [yh] shorter cannot carry message
+;.db Word_Any, "MORE.", Dialogue_NewPage
+;.db Word_Do_You, " ", Word_Want, "TO", Dialogue_NewLine
 .db "DROP ", Word_Some, Word_Thing, "?", Dialogue_Terminator62
 
 LABEL_B12_B68C:

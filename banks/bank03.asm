@@ -52,12 +52,12 @@ LABEL_B03_8000:
 ; =============================================================
 B03_EncounterPoolData:
 
-; 1
-.db	EnemyID_Sworm
-.db	EnemyID_Sworm
-.db	EnemyID_Sworm
-.db	EnemyID_Sworm
-.db	EnemyID_Sworm
+; 1 - [yh]no sworm in area outside of residential
+.db	EnemyID_Scorpion
+.db	EnemyID_Scorpion
+.db	EnemyID_Scorpion
+.db	EnemyID_Scorpion
+.db	EnemyID_Scorpion
 .db	EnemyID_Scorpion
 .db	EnemyID_Scorpion
 .db	EnemyID_Scorpion
@@ -223,9 +223,9 @@ B03_EncounterPoolData:
 .db	EnemyID_DeadTree
 
 ; $12
-.db	EnemyID_WingEye
-.db	EnemyID_WingEye
-.db	EnemyID_WingEye
+.db	EnemyID_WereBat
+.db	EnemyID_WereBat
+.db	EnemyID_WereBat
 .db	EnemyID_WereBat
 .db	EnemyID_WereBat
 .db	EnemyID_WereBat
@@ -1105,10 +1105,10 @@ Enemy_Sworm:
 .db	$0D	; Attack
 .db	$09	; Defense
 .db	$00	; Item Drop
-.dw	3	; Meseta
+.dw	3	; Meseta then useless
 .db	$0C	; Trap chance
-.dw	2	; EXP
-.db	$38
+.dw	2	; EXP then useless
+.db	$38 ; unknown
 .db	$FF	; Run chance
 
 Enemy_GrSlime:
@@ -1124,7 +1124,7 @@ Enemy_WingEye:
 .db $00, $3E, $00, $3E, $3C, $34, $30, $00
 .db	:Bank10
 .dw LABEL_B10_B7E4
-.db	$23, $06, $0B, $0C, $0A, $00
+.db	$23, $06, $05, $0C, $0A, $00 ; [yh] HP to 5
 .db $06, $00, $0F, $02, $00, $38, $7F
 
 Enemy_ManEater:
@@ -1135,13 +1135,13 @@ Enemy_ManEater:
 .db	$17, $05, $10, $0C, $0A, $00
 .db $0D, $00, $0F, $03, $00, $30, $FF
 
-Enemy_Scorpion:
-.db	"SCORPION"
+Enemy_Scorpion:; [yh] yields 255 xp/msts + name change
+.db	"DUMPI", Dialogue_Terminator65, "  "
 .db $2A, $25, $02, $03, $08, $00, $00, $37
 .db	:Bank25
 .dw LABEL_B25_A4D0
-.db	$0F, $04, $0C, $0E, $0C, $00
-.db $0D, $00, $0F, $04, $00, $38, $CC
+.db	$0F, $08, $0C, $0E, $0C, $00 ; [yh] change back to $00 :)
+.db $FF, $00, $0F, $FF, $00, $38, $CC
 
 Enemy_GScorpi:
 .db	"G.SCORPI"
@@ -1339,7 +1339,7 @@ Enemy_Vampire:
 .db $06, $0A, $2F, $2A, $25, $00, $2A
 .db	:Bank10
 .dw LABEL_B10_8000
-.db	$24, $02, $43, $44, $2E, ItemID_Flash
+.db	$24, $02, $43, $44, $2E, $00
 .db $47, $00, $0C, $0F, $00, $38, $CC
 
 Enemy_Elephant:
@@ -1348,7 +1348,7 @@ Enemy_Elephant:
 .db $33, $37, $3B, $2D, $2F, $2A, $0C
 .db	:Bank19
 .dw LABEL_B19_9C25
-.db	$03, $05, $56, $3E, $30, $00
+.db	$03, $05, $56, $3E, $30, $31 ; [yh]
 .db $26, $00, $0C, $11, $00, $20, $CC
 
 Enemy_Ghoul:
@@ -1411,7 +1411,7 @@ Enemy_Sphinx:
 .db $03, $07, $0B, $0A, $0F, $2F, $20
 .db	:Bank26
 .dw LABEL_B26_9748
-.db	$14, $04, $4E, $50, $41, ItemID_Flash
+.db	$14, $04, $4E, $50, $41, $00
 .db $3A, $00, $0C, $15, $00, $58, $CC
 
 Enemy_Serpent:
@@ -1591,7 +1591,7 @@ Enemy_Horseman:
 .db $30, $34, $38, $3C, $10, $0C, $2F
 .db	:Bank26
 .dw LABEL_B26_8000
-.db	$1D, $02, $82, $7E, $59, ItemID_Flash
+.db	$1D, $02, $82, $7E, $59, $00
 .db $94, $00, $00, $1E, $00, $44, $59
 
 Enemy_Frostman:
@@ -1681,7 +1681,7 @@ Enemy_Medusa:
 .db $12, $37, $2B, $32, $02, $22, $10
 .db	:Bank10
 .dw LABEL_B10_A044
-.db	$20, $01, $C8, $A6, $67, ItemID_Flash
+.db	$20, $01, $C8, $A6, $67, ItemID_Flash ;wtf? lac axe is in the event_flags
 .db $C2, $00, $00, $32, $00, $26, $99
 
 Enemy_WtDragn:
@@ -1717,7 +1717,7 @@ Enemy_DrMad:
 .db $3C, $3E, $3F, $25, $2A, $2F, $00
 .db	:Bank25
 .dw LABEL_B25_8000
-.db	$18, $01, $E9, $B4, $55, $00
+.db	$18, $02, $E9, $B4, $55, $00
 .db $8C, $00, $00, $19, $00, $30, $66
 
 Enemy_Lassic:
@@ -1998,7 +1998,7 @@ LABEL_B03_966C:
 .db $00, $13, $ED, $96, $10, $83, $4F, $74
 .db $00, $13, $ED, $96
 
-LABEL_B03_96F4:
+LABEL_B03_96F4: ; [yh] list of 140 things. there are 74 mobs.. graphics?
 .dw	LABEL_B03_980C
 .dw	LABEL_B03_980C
 .dw	LABEL_B03_981F
@@ -3335,17 +3335,17 @@ B03_ObjectData:
 .db	$00, $53
 .dw	Event_flags+$C0
 .db	$02
-.db	EnemyID_DrMad, $00
+.db	EnemyID_Tarzimal, $00 ;[yh] dr mad instance in bayamalay pass
 
 .db $00, $E3
-.dw	Dialogue_flags+$A
+.dw	Dialogue_flags+$A ;[yh] finding Odin
 .db	$03
 .db	$A3, $3A
 
 .db $00, $7C
 .dw	Event_flags+2
 .db	$01
-.dw	10
+.dw	1000 ;[yh - odin's cave]
 
 .db	$01, $17
 .dw	Event_flags+3
@@ -3370,12 +3370,12 @@ B03_ObjectData:
 .db	$02, $17
 .dw	Event_flags+4
 .db	$00
-.db ItemID_DungeonKey, $00
+.db ItemID_MiracleKey, $00 ;[yh] finding dungeon key in camineet
 
 .db	$02, $67
 .dw	Event_flags+5
 .db	$01
-.dw	50
+.dw	5000 ; [yh] camineet treasure chest, 50 -> 5000. $02 probably the warehouse ID.
 
 .db $02, $3A
 .dw	Event_flags+6
@@ -3705,7 +3705,7 @@ B03_ObjectData:
 .db $10, $61
 .dw	Event_flags+$40
 .db	$00
-.db	ItemID_Flash, $00
+.db	ItemID_Zillion, $00 ; [yh] hallway near the cake store. changed from flash.
 
 .db	$10, $9C
 .dw	Event_flags+$41
@@ -3715,7 +3715,7 @@ B03_ObjectData:
 .db	$10, $C7
 .dw Event_flags+$C9
 .db	$02
-.db	EnemyID_Skeleton, ItemID_IronFang
+.db	EnemyID_Skeleton, ItemID_SilverFang ;[yh] replaced IronFang
 
 .db	$10, $D1
 .dw	Event_flags+$42
@@ -3760,7 +3760,7 @@ B03_ObjectData:
 .db	$12, $CC
 .dw	Event_flags+$4A
 .db $00
-.db	ItemID_Flash, $00
+.db	ItemID_Flash, $00 ; [yh] probably in Iala cave (ironfang)
 
 .db	$12, $77
 .dw	Event_flags+$4B
@@ -4409,12 +4409,12 @@ B03_ShopData:
 
 ; 1 - Camineet Armory
 .db	$02
-.db ItemID_LeatherShield
+.db ItemID_MSystem
 .dw	30
 .db	ItemID_IronShield
-.dw	520
+.dw	300 ; [yh] drop a bit to make sense for ceramic's price
 .db	ItemID_CeramicShield
-.dw	1400
+.dw	700 ; [yh] always thought this was overpriced. better now
 
 ; 2 - Camineet Second Hand Shop
 .db	$02
@@ -4526,11 +4526,11 @@ B03_ShopData:
 
 ; $E - Eppi Armory
 .db	$02
-.db	ItemID_IronAxe
+.db	ItemID_LaconiaSword
 .dw	64
-.db	ItemID_NeedleGun
+.db	ItemID_LaserGun
 .dw	400
-.db ItemID_BronzeShield
+.db ItemID_MirrorShield
 .dw	310
 
 ; $F - Gothic Second Hand Shop
@@ -4544,8 +4544,8 @@ B03_ShopData:
 
 ; $10 - Loar Armory
 .db	$02
-.db	ItemID_WhiteMantle
-.dw	78
+.db	ItemID_MSystem ; [yh] better than white mantle. wanted to make it play a sound like the flute, but can't build when adding a use function
+.dw	1977 ; [yh] great year
 .db ItemID_HeatGun
 .dw	1540
 .db	ItemID_SilverFang
@@ -4558,7 +4558,7 @@ B03_ShopData:
 .db	ItemID_IronArmor
 .dw	84
 .db	ItemID_LaserShield
-.dw	4800
+.dw	2400 ;[yh] half price
 
 ; $12 - Abion Second Hand Shop
 .db	$02
@@ -4594,7 +4594,7 @@ B03_ShopData:
 .db	ItemID_LightSaber
 .dw	2980
 .db	ItemID_CeramicShield
-.dw	1400
+.dw	700 ; [yh] half price
 
 ; $16 - Casba Second Hand Shop
 .db	$02
@@ -4608,7 +4608,7 @@ B03_ShopData:
 ; $17 - Casba Vehicle Shop
 .db	$00
 .db	ItemID_Landrover
-.dw	5200
+.dw	500 ; [yh] given it's useless might as well not charge for it
 .db	ItemID_Nothing
 .dw 0
 .db	ItemID_Nothing
@@ -4716,19 +4716,19 @@ B03_AlisLevelTable:
 .db	$9F, $28, $5A, $18, $88, $13, $05, $02	; 17
 .db	$A6, $29, $60, $18, $70, $17, $05, $02	; 18
 .db	$AD, $2B, $64, $19, $20, $1C, $05, $02	; 19
-.db	$B6, $2C, $6B, $19, $34, $21, $05, $02	; 20
-.db	$BB, $2E, $6E, $1A, $10, $27, $05, $02	; 21
-.db	$C0, $30, $70, $1A, $E0, $2E, $05, $02	; 22
-.db	$C8, $31, $71, $1B, $A4, $38, $05, $02	; 23
-.db	$CC, $32, $72, $1C, $5C, $44, $05, $02	; 24
-.db	$D0, $33, $73, $1D, $D8, $59, $05, $02	; 25
-.db	$D2, $34, $77, $1D, $30, $75, $05, $02	; 26
-.db	$D4, $35, $75, $1E, $70, $94, $05, $02	; 27
-.db	$D6, $36, $76, $1E, $C8, $AF, $05, $02	; 28
-.db	$D8, $37, $77, $20, $20, $CB, $05, $02	; 29
-.db	$DA, $38, $78, $20, $18, $F6, $05, $02	; 30
+.db	$B6, $2C, $6B, $19, $34, $21, $05, $03	; 20
+.db	$BB, $2E, $6E, $1A, $10, $27, $05, $03	; 21
+.db	$C0, $30, $70, $1A, $E0, $2E, $05, $03	; 22
+.db	$C8, $31, $71, $1B, $A4, $38, $05, $03	; 23
+.db	$CC, $32, $72, $1C, $5C, $44, $05, $03	; 24
+.db	$D0, $33, $73, $1D, $D8, $59, $05, $03	; 25
+.db	$FF, $34, $77, $FF, $30, $75, $05, $03	; 26
+.db	$FF, $35, $75, $FF, $70, $94, $05, $03	; 27
+.db	$FF, $36, $76, $FF, $C8, $AF, $05, $03	; 28
+.db	$FF, $37, $77, $FF, $20, $CB, $05, $03	; 29
+.db	$FF, $38, $78, $FF, $18, $F6, $05, $03	; 30
 ; =============================================================
-
+; changed to 3 magic in map mode, starting level 20, for cure
 
 ; =============================================================
 B03_MyauLevelTable:
@@ -4755,15 +4755,15 @@ B03_MyauLevelTable:
 .db	$AF, $4C, $68, $2E, $04, $29, $04, $03	; 21
 .db	$B7, $4D, $6A, $2F, $C8, $32, $04, $03	; 22
 .db	$C1, $4F, $6C, $30, $98, $3A, $04, $03	; 23
-.db	$CA, $50, $70, $31, $50, $46, $04, $03	; 24
-.db	$D0, $51, $71, $32, $F0, $55, $04, $03	; 25
-.db	$D2, $52, $72, $33, $30, $75, $04, $03	; 26
-.db	$D3, $53, $73, $34, $A0, $8C, $04, $03	; 27
-.db	$D4, $54, $74, $35, $10, $A4, $04, $03	; 28
-.db	$D5, $55, $75, $36, $50, $C3, $04, $03	; 29
-.db	$D6, $56, $76, $37, $60, $EA, $04, $03	; 30
+.db	$CA, $50, $70, $31, $50, $46, $05, $03	; 24
+.db	$D0, $51, $71, $32, $F0, $55, $05, $03	; 25
+.db	$D2, $52, $72, $33, $30, $75, $05, $03	; 26
+.db	$D3, $53, $73, $34, $A0, $8C, $05, $03	; 27
+.db	$D4, $54, $74, $35, $10, $A4, $05, $03	; 28
+.db	$D5, $55, $75, $36, $50, $C3, $05, $03	; 29
+.db	$FF, $56, $76, $FF, $60, $EA, $05, $03	; 30
 ; =============================================================
-
+; changed to 5 magic in battle from 24 and on, for thunder
 
 ; =============================================================
 B03_OdinLevelTable:
@@ -4796,7 +4796,7 @@ B03_OdinLevelTable:
 .db	$BD, $2C, $47, $00, $B8, $88, $00, $00	; 27
 .db	$BE, $2D, $48, $00, $28, $A0, $00, $00	; 28
 .db	$BF, $2E, $49, $00, $50, $C3, $00, $00	; 29
-.db	$C0, $2F, $4A, $00, $60, $EA, $00, $00	; 30
+.db	$FF, $2F, $4A, $00, $60, $EA, $00, $00	; 30
 ; =============================================================
 
 
@@ -4831,9 +4831,9 @@ B03_NoahLevelTable:
 .db	$C0, $48, $78, $50, $30, $75, $05, $05	; 27
 .db	$C1, $49, $79, $51, $70, $94, $05, $05	; 28
 .db	$C2, $4A, $7A, $52, $C8, $AF, $05, $05	; 29
-.db	$C3, $4B, $7B, $53, $50, $C3, $05, $05	; 30
+.db	$FF, $4B, $7B, $FF, $50, $C3, $05, $05	; 30
 ; =============================================================
-
+; [yh] changed max hp/mp to 255 ($FF in the first and fourth) for all chars at level 30
 
 
 LABEL_B03_BC6F:
